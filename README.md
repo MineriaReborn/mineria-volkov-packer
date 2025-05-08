@@ -41,9 +41,10 @@ Conçu pour les environnements sensibles, Volkov permet de **réduire la surface
 
 ### **Exemple d’utilisation**
 
-#### **1. Crypter un client**
+#### **1. Crypter/décrypter un client**
 ```bash
-java -jar volkov-packer.jar client.jar client.enc
+java -jar volkov.jar --pack --input=client.jar --output=client.enc --key=SecretKey
+java -jar volkov.jar --unpack --input=client.enc --output=client.jar --key=SecretKey
 ```
 
 #### **2. Intégration dans un projet**
