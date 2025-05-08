@@ -89,4 +89,4 @@ avec un clavier soviétique.
 ---
 
 **Codé pour Mineria**  
-Par Clément Baggio — **alias CipheR_**
+Par **CipheR_**
