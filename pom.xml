@@ -6,7 +6,7 @@
 
 	<groupId>fr.mineria</groupId>
 	<artifactId>mineria-volkov-packer</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.6-SNAPSHOT</version>
 
 	<name>mineria-volkov-packer</name>
 	<url>http://www.mineria.fr</url>
@@ -59,7 +59,7 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>fr.mineria.volkov.VolkovPacker</mainClass>
+								<mainClass>fr.mineria.volkov.Volkov</mainClass>
 							</manifest>
 						</archive>
 					</configuration>
