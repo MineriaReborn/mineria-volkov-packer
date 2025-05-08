@@ -3,7 +3,10 @@ name: Release Volkov Packer
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
   release:
@@ -13,21 +16,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: '22'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+        run: mvn clean install
+        
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          files: |
-            target/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: ${{ inputs.tag || github.ref_name }}
+          files: ./target/*.jar
