@@ -3,7 +3,7 @@ name: Release Volkov Packer
 on:
   push:
     tags:
-      - 'v*'  # Ex: v1.0.0
+      - 'v*.*.*'
 
 jobs:
   release:
