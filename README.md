@@ -65,7 +65,7 @@ volkov.ClientLauncher.launchDecryptedClient("--arg1=value", "--arg2=value");
 
 Volkov n’est pas un logiciel.  
 C’est un homme quelque part à l’est, dans un bureau sans fenêtre,  
-avec un clavier soviétique et un œil sur chaque byte que tu charges.  
+avec un clavier soviétique.  
 
 > Si tu vois “client.enc”, c’est déjà trop tard.
 
