@@ -49,7 +49,23 @@ java -jar volkov.jar --unpack --input=client.enc --output=client.jar --key=Secre
 
 #### **2. Intégration dans un projet**
 ```java
-volkov.ClientLauncher.launchDecryptedClient("--arg1=value", "--arg2=value");
+    public static void main(String[] args) {
+        try {
+            // Exemple de config
+            String key = "SuperSecretKey42"; // 16 ou 32 caractères (AES)
+            String pathToEnc = "client.enc"; // chemin vers le .enc
+            String mainClass = "fr.project.client.Main"; // la classe contenant le main()
+            String clientArgs = "--accessToken=1234abc --uuid=uuid-XYZ --username=Dev";
+
+            // Lancement via Volkov
+            VolkovLauncher launcher = new VolkovLauncher(key, pathToEnc, mainClass, clientArgs);
+            launcher.launch();
+
+        } catch (Exception e) {
+            System.err.println("[VOLKOV] >> Échec du lancement : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 ```
 
 ---
