@@ -2,8 +2,8 @@ package fr.mineria.volkov;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+
 import java.nio.file.*;
-import java.util.Arrays;
 
 public class VolkovPacker {
 
@@ -20,16 +20,16 @@ public class VolkovPacker {
 	 * --key=          Clé secrète (16 ou 32 caractères pour AES)
 	 *
 	 * Exemple :
-	 * java -jar volkov-packer.jar --input=client.jar --output=client.enc --key=SuperSecretKey42
+	 * java -jar volkov-packer.jar --pack --input=client.jar --output=client.enc --key=SuperSecretKey42
 	 *
 	 * @author CipheR_
 	 * @project Mineria / Volkov Encryption
 	 */
 	
-    public static void main(String[] args) {
-        String inputPath = getArg(args, "input");
-        String outputPath = getArg(args, "output");
-        String keyString = getArg(args, "key");
+    public static void execute(String[] args) {
+        String inputPath = VolkovUtils.getArg(args, "input");
+        String outputPath = VolkovUtils.getArg(args, "output");
+        String keyString = VolkovUtils.getArg(args, "key");
 
         if (inputPath == null || outputPath == null || keyString == null) {
             System.out.println("Usage: java -jar volkov-packer.jar --input=client.jar --output=client.enc --key=YourSecretKey");
@@ -58,13 +58,5 @@ public class VolkovPacker {
             System.err.println("[VOLKOV] >> Erreur lors du chiffrement : " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private static String getArg(String[] args, String name) {
-        return Arrays.stream(args)
-                .filter(arg -> arg.startsWith("--" + name + "="))
-                .map(arg -> arg.substring(name.length() + 3))
-                .findFirst()
-                .orElse(null);
     }
 }

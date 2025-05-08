@@ -6,7 +6,7 @@
 
 	<groupId>fr.mineria</groupId>
 	<artifactId>mineria-volkov-packer</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 
 	<name>mineria-volkov-packer</name>
 	<url>http://www.mineria.fr</url>
@@ -18,7 +18,15 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version> <!-- ou ta version -->
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libraries/lombok.jar</systemPath>
+		</dependency>
 	</dependencies>
+
 
 	<build>
 		<pluginManagement><!-- lock down plugins versions to avoid using Maven
@@ -45,8 +53,16 @@
 					<version>3.3.0</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.4.2</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>fr.mineria.volkov.VolkovPacker</mainClass>
+							</manifest>
+						</archive>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-install-plugin</artifactId>
