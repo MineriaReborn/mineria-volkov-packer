@@ -76,15 +76,6 @@ java -jar volkov.jar --unpack --input=client.enc --output=client.jar --key=Secre
 - Résistant aux outils comme **JD-GUI, Bytecode Viewer etc.**
 - Lib légère, modulaire, facilement intégrable dans tout projet Java sécurisé
 
----
-
-### **Note officieuse**
-
-Volkov n’est pas un logiciel.  
-C’est un homme quelque part à l’est, dans un bureau sans fenêtre,  
-avec un clavier soviétique.  
-
-> Si tu vois “client.enc”, c’est déjà trop tard.
 
 ---
 
