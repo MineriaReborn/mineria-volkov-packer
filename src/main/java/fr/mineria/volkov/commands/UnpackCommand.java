@@ -21,11 +21,12 @@ public class UnpackCommand implements Runnable {
     @Override
     public void run() {
         try {
-            if (key.length() != 16 && key.length() != 32) {
-                throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) characters long.");
-            }
-
-            byte[] keyBytes = key.getBytes("UTF-8");
+        	byte[] keyBytes = key.getBytes("UTF-8");
+        	
+        	if (keyBytes.length != 16 && keyBytes.length != 32) {
+        	    throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes long after UTF-8 encoding.");
+        	}
+        	
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
             Cipher cipher = Cipher.getInstance("AES");
