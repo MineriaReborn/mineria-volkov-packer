@@ -17,7 +17,7 @@ public class VolkovLauncher {
     private String secretKey;
     private String encryptedJarPath;
     private String mainClass;
-    private String args;
+    private String[] args;
 
     public VolkovLauncher withKey(String secretKey) {
         this.secretKey = secretKey;
@@ -34,7 +34,7 @@ public class VolkovLauncher {
         return this;
     }
 
-    public VolkovLauncher withArgs(String args) {
+    public VolkovLauncher withArgs(String[] args) {
         this.args = args;
         return this;
     }
@@ -47,7 +47,7 @@ public class VolkovLauncher {
         ClassLoader loader = new VolkovClassLoader(classMap);
         Class<?> mainClassRef = loader.loadClass(mainClass);
         Method mainMethod = mainClassRef.getMethod("main", String[].class);
-        mainMethod.invoke(null, (Object) parseArgs(args));
+        mainMethod.invoke(null, (Object) args);
     }
 
     private byte[] decryptJar(byte[] data, String key) throws Exception {
@@ -81,11 +81,5 @@ public class VolkovLauncher {
         }
 
         return classes;
-    }
-
-    private String[] parseArgs(String raw) {
-        return raw == null || raw.isEmpty()
-                ? new String[0]
-                : raw.split(" ");
     }
 }
