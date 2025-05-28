@@ -2,6 +2,7 @@ package fr.mineria.volkov.commands;
 
 import picocli.CommandLine;
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,8 +30,10 @@ public class UnpackCommand implements Runnable {
         	
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            byte[] iv = new byte[16];
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
 
             byte[] data = Files.readAllBytes(Paths.get(inputPath));
             byte[] decrypted = cipher.doFinal(data);

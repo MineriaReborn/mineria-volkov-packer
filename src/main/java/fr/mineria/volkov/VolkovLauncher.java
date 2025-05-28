@@ -1,6 +1,7 @@
 package fr.mineria.volkov;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,9 +52,11 @@ public class VolkovLauncher {
     }
 
     private byte[] decryptJar(byte[] data, String key) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        byte[] iv = new byte[16];
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
         SecretKeySpec spec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-        cipher.init(Cipher.DECRYPT_MODE, spec);
+        cipher.init(Cipher.DECRYPT_MODE, spec, ivSpec);
         return cipher.doFinal(data);
     }
 
