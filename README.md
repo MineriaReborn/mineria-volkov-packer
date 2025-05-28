@@ -10,74 +10,86 @@
 
 ---
 
-### **Présentation**
+## Introduction
 
-**Volkov** est une solution Java destinée à la **protection et à l’exécution discrète de fichiers `.jar`**.
+**Volkov** est une petite bibliothèque Java conçue pour **protéger et exécuter des fichiers `.jar` de manière sécurisée**. Elle chiffre vos `.jar` avec AES et les exécute directement depuis la mémoire, sans jamais les écrire sur disque.
 
-Elle se compose de deux outils :
-- un **packer** qui chiffre un fichier `.jar` à l’aide d’AES,
-- une **lib de chargement mémoire** qui permet d'exécuter ce `.jar` directement depuis la RAM, sans l’écrire sur le disque.
-
-Conçu pour les environnements sensibles, Volkov permet de **réduire la surface d’attaque**, d’empêcher l’analyse statique classique et d’éviter la décompilation facile des clients Java.
+Le but principal de Volkov est de **réduire la surface d'attaque** et d'empêcher la rétro-ingénierie de vos fichiers `.jar`.
 
 ---
 
-### **Composants**
+## Fonctionnalités
 
-#### **1. Volkov Packer**
-> Un outil en ligne de commande qui :
-- Prend un fichier `.jar`
-- Le chiffre avec AES (clé configurable)
-- Génère un fichier `client.enc` lisible uniquement par le loader
-
-#### **2. Volkov Loader Lib**
-> Une bibliothèque Java qui :
-- Lit un fichier `.enc` chiffré
-- Le déchiffre en mémoire
-- Charge le contenu via un `ClassLoader` personnalisé
-- Lance automatiquement la méthode `main()` de la classe cible
+### **Pourquoi utiliser Volkov ?**
+- **Exécution en mémoire uniquement** : Pas de trace sur disque.
+- **Protection contre la rétro-ingénierie** : Résistant aux outils comme JD-GUI ou Bytecode Viewer.
+- **Chiffrement AES** : Utilisation de clés AES (16 ou 32 caractères).
+- **Simple à intégrer** : Une interface intuitive et légère.
 
 ---
 
-### **Exemple d’utilisation**
+## Utilisation via CLI
 
-#### **1. Crypter/décrypter un client**
+Volkov inclut un outil CLI simple pour chiffrer ou déchiffrer vos fichiers `.jar`.
+
+### **Commandes**
+#### Chiffrer (`pack`)
 ```bash
-java -jar volkov.jar --pack --input=client.jar --output=client.enc --key=SecretKey
-java -jar volkov.jar --unpack --input=client.enc --output=client.jar --key=SecretKey
+java -jar volkov.jar pack --input client.jar --output client.enc --key SuperSecretKey42
 ```
 
-#### **2. Intégration dans un projet**
+#### Déchiffrer (`unpack`)
+```bash
+java -jar volkov.jar unpack --input client.enc --output client.jar --key SuperSecretKey42
+```
+
+### **Options**
+| Option         | Description                                  |
+|----------------|----------------------------------------------|
+| `--input`      | Chemin du fichier source à traiter.          |
+| `--output`     | Chemin de sortie pour le fichier généré.     |
+| `--key`        | Clé AES (16 ou 32 caractères).               |
+
+---
+
+## Exemple d'intégration
+
+Voici un exemple simple pour exécuter un `.jar` chiffré dans votre projet :
+
 ```java
+import fr.mineria.volkov.VolkovLauncher;
+
+public class Main {
     public static void main(String[] args) {
         try {
-            // Exemple de config
-            String key = "SuperSecretKey42"; // 16 ou 32 caractères (AES)
-            String pathToEnc = "client.enc"; // chemin vers le .enc
-            String mainClass = "fr.project.client.Main"; // la classe contenant le main()
-            String clientArgs = "--accessToken=1234abc --uuid=uuid-XYZ --username=Dev";
-
-            // Lancement via Volkov
-            VolkovLauncher launcher = new VolkovLauncher(key, pathToEnc, mainClass, clientArgs);
-            launcher.launch();
-
+            new VolkovLauncher()
+                .withKey("SuperSecretKey42")
+                .withEncryptedPath("client.enc")
+                .withMainClass("com.example.Main")
+                .launch();
         } catch (Exception e) {
-            System.err.println("[VOLKOV] >> Échec du lancement : " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("[VOLKOV] >> Échec du lancement : " + e.getMessage());
         }
     }
+}
 ```
 
 ---
 
-### **Avantages**
+## FAQ
 
-- Exécution **100% en mémoire** (pas de trace sur disque)
-- Résistant aux outils comme **JD-GUI, Bytecode Viewer etc.**
-- Lib légère, modulaire, facilement intégrable dans tout projet Java sécurisé
+### **Quelles sont les limites de Volkov ?**
+- Volkov protège vos `.jar` contre les analyses statiques et la décompilation classique, mais aucune solution n'est 100% infaillible face à un attaquant très motivé.
 
+### **Est-ce difficile à intégrer ?**
+- Pas du tout. Volkov est conçu pour être simple et rapide à utiliser.
 
 ---
 
-**Codé pour Mineria**  
-Par **CipheR_**
+## Licence
+
+Distribué sous licence MIT. Consultez le fichier `LICENSE` pour plus de détails.
+
+---
+
+**Développé** avec ❤️ par **CipheR_** pour **Mineria**

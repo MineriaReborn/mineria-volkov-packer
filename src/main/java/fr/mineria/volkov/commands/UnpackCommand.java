@@ -1,0 +1,45 @@
+package fr.mineria.volkov.commands;
+
+import picocli.CommandLine;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+@CommandLine.Command(name = "unpack", description = "Unpack an encrypted .enc file into a JAR file")
+public class UnpackCommand implements Runnable {
+
+    @CommandLine.Option(names = "--input", required = true, description = "Input encrypted file")
+    private String inputPath;
+
+    @CommandLine.Option(names = "--output", required = true, description = "Output JAR file")
+    private String outputPath;
+
+    @CommandLine.Option(names = "--key", required = true, description = "AES decryption key (16 or 32 characters)")
+    private String key;
+
+    @Override
+    public void run() {
+        try {
+            if (key.length() != 16 && key.length() != 32) {
+                throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) characters long.");
+            }
+
+            byte[] keyBytes = key.getBytes("UTF-8");
+            SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            byte[] data = Files.readAllBytes(Paths.get(inputPath));
+            byte[] decrypted = cipher.doFinal(data);
+
+            Files.write(Paths.get(outputPath), decrypted);
+            System.out.println("[VOLKOV] >> Successfully unpacked: " + outputPath);
+
+        } catch (Exception e) {
+            System.err.println("[VOLKOV] >> Error during unpacking: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}

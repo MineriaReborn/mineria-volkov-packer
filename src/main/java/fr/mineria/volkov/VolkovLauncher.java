@@ -2,11 +2,6 @@ package fr.mineria.volkov;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
@@ -17,16 +12,6 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-/**
- * VolkovLauncher – Chargeur mémoire pour fichiers .enc chiffrés (AES)
- * Déchiffre et exécute un client Java depuis un jar embarqué (en RAM uniquement).
- *
- * @author CipheR_
- */
-
-@Getter
-@Setter
-@AllArgsConstructor
 public class VolkovLauncher {
 
     private String secretKey;
@@ -34,9 +19,26 @@ public class VolkovLauncher {
     private String mainClass;
     private String args;
 
-    /**
-     * Lance le client déchiffré depuis la mémoire, sans jamais écrire sur disque.
-     */
+    public VolkovLauncher withKey(String secretKey) {
+        this.secretKey = secretKey;
+        return this;
+    }
+
+    public VolkovLauncher withEncryptedPath(String encryptedJarPath) {
+        this.encryptedJarPath = encryptedJarPath;
+        return this;
+    }
+
+    public VolkovLauncher withMainClass(String mainClass) {
+        this.mainClass = mainClass;
+        return this;
+    }
+
+    public VolkovLauncher withArgs(String args) {
+        this.args = args;
+        return this;
+    }
+
     public void launch() throws Exception {
         byte[] encryptedJar = Files.readAllBytes(Paths.get(encryptedJarPath));
         byte[] decryptedJar = decryptJar(encryptedJar, secretKey);
@@ -48,9 +50,6 @@ public class VolkovLauncher {
         mainMethod.invoke(null, (Object) parseArgs(args));
     }
 
-    /**
-     * Déchiffre le JAR chiffré à l'aide de la clé AES.
-     */
     private byte[] decryptJar(byte[] data, String key) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         SecretKeySpec spec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -58,9 +57,6 @@ public class VolkovLauncher {
         return cipher.doFinal(data);
     }
 
-    /**
-     * Extrait les classes d'un .jar contenu en mémoire sous forme de byte[].
-     */
     private Map<String, byte[]> extractClasses(byte[] jarBytes) throws Exception {
         Map<String, byte[]> classes = new HashMap<>();
 
@@ -87,9 +83,6 @@ public class VolkovLauncher {
         return classes;
     }
 
-    /**
-     * Parse les arguments sous forme d'une seule chaîne en tableau.
-     */
     private String[] parseArgs(String raw) {
         return raw == null || raw.isEmpty()
                 ? new String[0]
