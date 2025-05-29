@@ -1,14 +1,18 @@
 package fr.mineria.volkov;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 public class VolkovClassLoader extends ClassLoader {
 
     private final Map<String, byte[]> classMap;
+    private final Map<String, byte[]> resourceMap;
 
-    public VolkovClassLoader(Map<String, byte[]> classMap) {
+    public VolkovClassLoader(Map<String, byte[]> classMap, Map<String, byte[]> resourceMap) {
         super(ClassLoader.getSystemClassLoader());
         this.classMap = classMap;
+        this.resourceMap = resourceMap;
     }
 
     @Override
@@ -19,5 +23,13 @@ public class VolkovClassLoader extends ClassLoader {
         }
         return super.findClass(name);
     }
-}
 
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        if (resourceMap.containsKey(name)) {
+            byte[] data = resourceMap.get(name);
+            return new ByteArrayInputStream(data);
+        }
+        return super.getResourceAsStream(name);
+    }
+}
