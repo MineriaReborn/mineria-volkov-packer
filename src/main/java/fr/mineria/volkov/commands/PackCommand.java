@@ -4,8 +4,11 @@ import picocli.CommandLine;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 
 @CommandLine.Command(name = "pack", description = "Pack a JAR file into an encrypted .enc file")
 public class PackCommand implements Runnable {
@@ -22,27 +25,33 @@ public class PackCommand implements Runnable {
     @Override
     public void run() {
         try {
-        	byte[] keyBytes = key.getBytes("UTF-8");
-        	
-        	if (keyBytes.length != 16 && keyBytes.length != 32) {
-        	    throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes long after UTF-8 encoding.");
-        	}
-        	
+            byte[] keyBytes = key.getBytes("UTF-8");
+            if (keyBytes.length != 16 && keyBytes.length != 32) {
+                throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes after UTF-8 encoding.");
+            }
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             byte[] iv = new byte[16];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(iv);
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
 
             byte[] data = Files.readAllBytes(Paths.get(inputPath));
+
             byte[] encrypted = cipher.doFinal(data);
 
-            Files.write(Paths.get(outputPath), encrypted);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(iv);
+            outputStream.write(encrypted);
+
+            Files.write(Paths.get(outputPath), outputStream.toByteArray());
             System.out.println("[VOLKOV] >> Successfully packed: " + outputPath);
 
         } catch (Exception e) {
-            System.err.println("[VOLKOV] >> Error during packing: " + e.getMessage());
+            System.err.println("[VOLKOV] >> Error during packing: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             e.printStackTrace();
         }
     }

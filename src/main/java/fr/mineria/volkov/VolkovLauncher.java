@@ -7,6 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -54,25 +55,35 @@ public class VolkovLauncher {
     }
 
     private Map<String, Map<String, byte[]>> decryptAndExtractJar(String inputPath, String key) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        try (InputStream fis = new FileInputStream(inputPath)) {
 
-        byte[] iv = new byte[16];
-        IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
-        SecretKeySpec spec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-        cipher.init(Cipher.DECRYPT_MODE, spec, ivSpec);
-
-        try (InputStream fis = new FileInputStream(inputPath);
-             CipherInputStream cis = new CipherInputStream(fis, cipher);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = cis.read(buffer)) != -1) {
-                bos.write(buffer, 0, bytesRead);
+            byte[] iv = new byte[16];
+            int readBytes = fis.read(iv);
+            if (readBytes != 16) {
+                throw new IOException("Unable to read full IV (16 bytes required)");
             }
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
-            return extractJar(new ByteArrayInputStream(bos.toByteArray()));
+            byte[] keyBytes = key.getBytes("UTF-8");
+            if (keyBytes.length != 16) {
+                throw new IllegalArgumentException("Key must be exactly 16 bytes (128 bits) long");
+            }
+            SecretKeySpec spec = new SecretKeySpec(keyBytes, "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, spec, ivSpec);
+
+            try (CipherInputStream cis = new CipherInputStream(fis, cipher);
+                 ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = cis.read(buffer)) != -1) {
+                    bos.write(buffer, 0, bytesRead);
+                }
+
+                return extractJar(new ByteArrayInputStream(bos.toByteArray()));
+            }
         }
     }
 

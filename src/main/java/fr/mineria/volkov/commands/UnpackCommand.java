@@ -6,6 +6,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 @CommandLine.Command(name = "unpack", description = "Unpack an encrypted .enc file into a JAR file")
 public class UnpackCommand implements Runnable {
@@ -22,27 +23,30 @@ public class UnpackCommand implements Runnable {
     @Override
     public void run() {
         try {
-        	byte[] keyBytes = key.getBytes("UTF-8");
-        	
-        	if (keyBytes.length != 16 && keyBytes.length != 32) {
-        	    throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes long after UTF-8 encoding.");
-        	}
-        	
+            byte[] keyBytes = key.getBytes("UTF-8");
+            if (keyBytes.length != 16 && keyBytes.length != 32) {
+                throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes after UTF-8 encoding.");
+            }
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            byte[] iv = new byte[16];
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+            byte[] encryptedData = Files.readAllBytes(Paths.get(inputPath));
+            if (encryptedData.length < 16) {
+                throw new IllegalArgumentException("Encrypted data is too short to contain an IV.");
+            }
 
-            byte[] data = Files.readAllBytes(Paths.get(inputPath));
-            byte[] decrypted = cipher.doFinal(data);
+            byte[] iv = Arrays.copyOfRange(encryptedData, 0, 16);
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+            byte[] cipherData = Arrays.copyOfRange(encryptedData, 16, encryptedData.length);
+            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+            byte[] decrypted = cipher.doFinal(cipherData);
 
             Files.write(Paths.get(outputPath), decrypted);
             System.out.println("[VOLKOV] >> Successfully unpacked: " + outputPath);
 
         } catch (Exception e) {
-            System.err.println("[VOLKOV] >> Error during unpacking: " + e.getMessage());
+            System.err.println("[VOLKOV] >> Error during unpacking: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             e.printStackTrace();
         }
     }
