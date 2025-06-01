@@ -12,9 +12,13 @@
 
 ## Introduction
 
-**Volkov** est une petite bibliothèque Java conçue pour **protéger et exécuter des fichiers `.jar` de manière sécurisée**. Elle chiffre vos `.jar` avec AES et les exécute directement depuis la mémoire, sans jamais les écrire sur disque.
+**Volkov** est une bibliothèque Java conçue pour **chiffrer et exécuter des fichiers `.jar` de manière sécurisée, entièrement en mémoire**.
 
-Le but principal de Volkov est de **réduire la surface d'attaque** et d'empêcher la rétro-ingénierie de vos fichiers `.jar`.
+Vous commencez par **chiffrer votre `.jar` à l’aide de la CLI fournie**, avec votre propre clé AES. Ensuite, vous utilisez **la bibliothèque Volkov dans votre launcher Java** pour **décrypter et exécuter le JAR directement depuis la mémoire** – sans jamais l’écrire sur le disque.
+
+Seul le `.jar` chiffré est stocké ; le contenu original reste protégé contre la rétro-ingénierie classique.
+
+> 💡 Pour une protection maximale, il est recommandé d’**obfusquer à la fois le launcher et le `.jar` chiffré** avec un obfuscateur avancé.
 
 ---
 
