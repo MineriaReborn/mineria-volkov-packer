@@ -18,7 +18,7 @@ Vous commencez par **chiffrer votre `.jar` à l’aide de la CLI fournie**, avec
 
 Seul le `.jar` chiffré est stocké ; le contenu original reste protégé contre la rétro-ingénierie classique.
 
-> 💡 Pour une protection maximale, il est recommandé d’**obfusquer à la fois le launcher et le `.jar` chiffré** avec un obfuscateur avancé.
+> 💡 Pour une protection maximale, il est recommandé d’**obfusquer à la fois le launcher et le `.jar` avant chiffrage** avec un obfuscateur avancé.
 
 ---
 
