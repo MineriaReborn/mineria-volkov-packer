@@ -12,9 +12,13 @@
 
 ## Introduction
 
-**Volkov** est une petite bibliothèque Java conçue pour **protéger et exécuter des fichiers `.jar` de manière sécurisée**. Elle chiffre vos `.jar` avec AES et les exécute directement depuis la mémoire, sans jamais les écrire sur disque.
+**Volkov** est une bibliothèque Java conçue pour **chiffrer et exécuter des fichiers `.jar` de manière sécurisée, entièrement en mémoire**.
 
-Le but principal de Volkov est de **réduire la surface d'attaque** et d'empêcher la rétro-ingénierie de vos fichiers `.jar`.
+Vous commencez par **chiffrer votre `.jar` à l’aide de la CLI fournie**, avec votre propre clé AES. Ensuite, vous utilisez **la bibliothèque Volkov dans votre launcher Java** pour **décrypter et exécuter le JAR directement depuis la mémoire** – sans jamais l’écrire sur le disque.
+
+Seul le `.jar` chiffré est stocké ; le contenu original reste protégé contre la rétro-ingénierie classique.
+
+> 💡 Pour une protection maximale, il est recommandé d’**obfusquer à la fois le launcher et le `.jar` avant chiffrage** avec un obfuscateur avancé.
 
 ---
 
@@ -80,6 +84,13 @@ public class Main {
 
 ### **Quelles sont les limites de Volkov ?**
 - Volkov protège vos `.jar` contre les analyses statiques et la décompilation classique, mais aucune solution n'est 100% infaillible face à un attaquant très motivé.
+- En particulier, la clé de chiffrement utilisée pour protéger le `.jar` **doit être protégée par vos soins**. Puisqu’elle doit être présente côté client pour permettre le déchiffrement en mémoire, elle pourra toujours être récupérée par un attaquant déterminé.
+- Il est donc important de mettre en place des mesures complémentaires pour limiter la récupération de cette clé, par exemple :  
+  - Fragmenter la clé en plusieurs morceaux dans le code et la reconstruire dynamiquement au runtime.  
+  - Chiffrer partiellement les fragments de clé avec des transformations simples (XOR, rotation de bits).  
+  - Obfusquer fortement le launcher et la logique de déchiffrement avec des outils spécialisés.  
+  - Implémenter des protections anti-debug et anti-tampering pour compliquer l’analyse dynamique.  
+  - Lorsque c’est possible, déporter la gestion ou la fourniture de la clé vers un serveur sécurisé, afin que la clé ne soit pas stockée directement dans le client.
 
 ### **Est-ce difficile à intégrer ?**
 - Pas du tout. Volkov est conçu pour être simple et rapide à utiliser.
