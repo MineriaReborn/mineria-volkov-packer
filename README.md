@@ -84,6 +84,13 @@ public class Main {
 
 ### **Quelles sont les limites de Volkov ?**
 - Volkov protège vos `.jar` contre les analyses statiques et la décompilation classique, mais aucune solution n'est 100% infaillible face à un attaquant très motivé.
+- En particulier, la clé de chiffrement utilisée pour protéger le `.jar` **doit être protégée par vos soins**. Puisqu’elle doit être présente côté client pour permettre le déchiffrement en mémoire, elle pourra toujours être récupérée par un attaquant déterminé.
+- Il est donc important de mettre en place des mesures complémentaires pour limiter la récupération de cette clé, par exemple :  
+  - Fragmenter la clé en plusieurs morceaux dans le code et la reconstruire dynamiquement au runtime.  
+  - Chiffrer partiellement les fragments de clé avec des transformations simples (XOR, rotation de bits).  
+  - Obfusquer fortement le launcher et la logique de déchiffrement avec des outils spécialisés.  
+  - Implémenter des protections anti-debug et anti-tampering pour compliquer l’analyse dynamique.  
+  - Lorsque c’est possible, déporter la gestion ou la fourniture de la clé vers un serveur sécurisé, afin que la clé ne soit pas stockée directement dans le client.
 
 ### **Est-ce difficile à intégrer ?**
 - Pas du tout. Volkov est conçu pour être simple et rapide à utiliser.
