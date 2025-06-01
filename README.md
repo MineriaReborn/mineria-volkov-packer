@@ -95,6 +95,17 @@ public class Main {
 ### **Est-ce difficile à intégrer ?**
 - Pas du tout. Volkov est conçu pour être simple et rapide à utiliser.
 
+### **Quels modes AES sont supportés en Java 22 ?**
+| Mode     | Support natif dans JDK 22 | Padding recommandé       |
+|----------|---------------------------|-------------------------|
+| AES/ECB  | Oui                       | PKCS5Padding            |
+| AES/CBC  | Oui                       | PKCS5Padding            |
+| AES/CFB8 | Oui                       | NoPadding               |
+| AES/CFB  | Oui                       | NoPadding               |
+| AES/OFB  | Oui                       | NoPadding               |
+| AES/CTR  | Oui                       | NoPadding               |
+| AES/GCM  | Oui                       | NoPadding (authentifié) |
+
 ---
 
 ## Licence
