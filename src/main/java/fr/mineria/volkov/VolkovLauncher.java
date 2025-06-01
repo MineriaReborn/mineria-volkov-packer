@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -64,9 +65,9 @@ public class VolkovLauncher {
             }
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
-            byte[] keyBytes = key.getBytes("UTF-8");
-            if (keyBytes.length != 16) {
-                throw new IllegalArgumentException("Key must be exactly 16 bytes (128 bits) long");
+            byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+            if (keyBytes.length != 16 && keyBytes.length != 32) {
+                throw new IllegalArgumentException("Key must be 16 (AES-128) or 32 (AES-256) bytes after UTF-8 encoding.");
             }
             SecretKeySpec spec = new SecretKeySpec(keyBytes, "AES");
 
